@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redefinir Senha - YOMU!</title>
+
+<!-- Fonte Maserati (substituto: Poppins + estilização personalizada) -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, verifyPasswordResetCode, confirmPasswordReset } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  // 🔥 Configuração do teu Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyANayvc0KmsS9AOM53rgJJXsS_G4uSUA9E",
+    authDomain: "yomu-9645d.firebaseapp.com",
+    databaseURL: "https://yomu-9645d-default-rtdb.firebaseio.com",
+    projectId: "yomu-9645d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const params = new URLSearchParams(window.location.search);
+  const oobCode = params.get('oobCode');
+
+  // Exibir formulário se o link for válido
+  verifyPasswordResetCode(auth, oobCode)
+    .then(() => {
+      document.getElementById('reset-form').style.display = 'flex';
+    })
+    .catch(() => {
+      document.getElementById('message').textContent = '❌ Este link é inválido ou expirou.';
+    });
+
+  // Função para redefinir senha
+  window.resetPassword = async () => {
+    const pass = document.getElementById('new-password').value.trim();
+    const confirm = document.getElementById('confirm-password').value.trim();
+    const msg = document.getElementById('message');
+
+    if (!pass || !confirm) {
+      msg.textContent = 'Preencha todos os campos.';
+      return;
+    }
+
+    if (pass !== confirm) {
+      msg.textContent = 'As senhas não coincidem.';
+      return;
+    }
+
+    try {
+      await confirmPasswordReset(auth, oobCode, pass);
+      msg.style.color = '#00ff7f';
+      msg.textContent = '✅ Senha redefinida com sucesso!';
+      document.getElementById('reset-form').style.display = 'none';
+    } catch (err) {
+      msg.textContent = '❌ Ocorreu um erro ao redefinir sua senha.';
+    }
+  };
+</script>
+
+<style>
+  :root {
+    --red: #E50012;
+    --dark-bg: #0B0B0B;
+    --card-bg: #161616;
+    --input-bg: #1E1E1E;
+    --text: #EAEAEA;
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  body {
+    background-color: var(--dark-bg);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: var(--text);
+  }
+
+  .container {
+    background: var(--card-bg);
+    padding: 50px 35px;
+    border-radius: 18px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+  }
+
+  h1 {
+    font-size: 2em;
+    color: var(--red);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  p.subtitle {
+    color: #bbb;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+  }
+
+  #reset-form {
+    display: none;
+    flex-direction: column;
+  }
+
+  input {
+    background: var(--input-bg);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 15px;
+    color: #fff;
+    font-size: 0.95em;
+    transition: 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--red);
+    outline: none;
+  }
+
+  button {
+    background: var(--red);
+    border: none;
+    color: #fff;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  button:hover {
+    background: #b0000e;
+    transform: translateY(-2px);
+  }
+
+  #message {
+    margin-top: 18px;
+    font-size: 0.9em;
+    color: #ccc;
+    min-height: 20px;
+  }
+
+  footer {
+    margin-top: 30px;
+    font-size: 0.75em;
+    color: #666;
+  }
+
+  footer span {
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>YOMU!</h1>
+    <p class="subtitle">Redefina sua senha abaixo</p>
+
+    <div id="reset-form">
+      <input type="password" id="new-password" placeholder="Nova senha">
+      <input type="password" id="confirm-password" placeholder="Confirmar senha">
+      <button onclick="resetPassword()">Redefinir Senha</button>
+    </div>
+
+    <p id="message"></p>
+
+    <footer>&copy; <span>YOMU!</span> — Portal Seguro</footer>
+  </div>
+</body>
+</html>
