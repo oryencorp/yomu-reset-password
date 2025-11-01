@@ -114,4 +114,84 @@
     };
   </script>
 </body>
+</html>      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #45a29e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #66fcf1;
+      color: #000;
+    }
+
+    .message {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+  </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>YOMU!</h1>
+    <h3>Redefinir Senha</h3>
+    <input type="password" id="newPassword" placeholder="Digite a nova senha" />
+    <button id="resetBtn">Atualizar Senha</button>
+    <p id="message" class="message"></p>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyANayvc0KmsS9AOM53rgJJXsS_G4uSUA9E",
+      authDomain: "yomu-9645d.firebaseapp.com",
+      databaseURL: "https://yomu-9645d-default-rtdb.firebaseio.com",
+      projectId: "yomu-9645d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const resetBtn = document.getElementById("resetBtn");
+    const message = document.getElementById("message");
+    const urlParams = new URLSearchParams(window.location.search);
+    const oobCode = urlParams.get("oobCode");
+
+    resetBtn.onclick = async () => {
+      const newPassword = document.getElementById("newPassword").value;
+      if (!newPassword) {
+        message.textContent = "Digite uma nova senha.";
+        message.style.color = "#ff6666";
+        return;
+      }
+
+      try {
+        await auth.confirmPasswordReset(oobCode, newPassword);
+        message.textContent = "✅ Senha redefinida com sucesso!";
+        message.style.color = "#66fcf1";
+      } catch (error) {
+        message.textContent = "❌ Erro: " + error.message;
+        message.style.color = "#ff6666";
+      }
+    };
+  </script>
+</body>
   </html>
