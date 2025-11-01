@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redefinir Senha | YOMU!</title>
+  <style>
+    body {
+      background-color: #0d0e12;
+      color: #ffffff;
+      font-family: "Maserat", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #1b1e24;
+      padding: 35px;
+      border-radius: 15px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      color: #66fcf1;
+      margin-bottom: 20px;
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #45a29e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #66fcf1;
+      color: #000;
+    }
+
+    .message {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+  </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>YOMU!</h1>
+    <h3>Redefinir Senha</h3>
+    <input type="password" id="newPassword" placeholder="Digite a nova senha" />
+    <button id="resetBtn">Atualizar Senha</button>
+    <p id="message" class="message"></p>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyANayvc0KmsS9AOM53rgJJXsS_G4uSUA9E",
+      authDomain: "yomu-9645d.firebaseapp.com",
+      databaseURL: "https://yomu-9645d-default-rtdb.firebaseio.com",
+      projectId: "yomu-9645d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const resetBtn = document.getElementById("resetBtn");
+    const message = document.getElementById("message");
+    const urlParams = new URLSearchParams(window.location.search);
+    const oobCode = urlParams.get("oobCode");
+
+    resetBtn.onclick = async () => {
+      const newPassword = document.getElementById("newPassword").value;
+      if (!newPassword) {
+        message.textContent = "Digite uma nova senha.";
+        message.style.color = "#ff6666";
+        return;
+      }
+
+      try {
+        await auth.confirmPasswordReset(oobCode, newPassword);
+        message.textContent = "✅ Senha redefinida com sucesso!";
+        message.style.color = "#66fcf1";
+      } catch (error) {
+        message.textContent = "❌ Erro: " + error.message;
+        message.style.color = "#ff6666";
+      }
+    };
+  </script>
+</body>
+  </html>
